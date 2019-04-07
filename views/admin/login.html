@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <title>Sign in &laquo; Admin</title>
+  <link rel="stylesheet" href="/public/assets/vendors/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="/public/assets/css/admin.css">
+  <style>
+    #login_form input.error {
+      border: 1px solid red
+    }
+    /* #login_form input.valid {
+      border: 1px solid green 
+    } */
+    #email-error {
+      color: red!important;
+      font-size: 12px;
+      font-weight: normal
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login">
+    <form class="login-wrap" id="login_form">
+      <img class="avatar" src="/public/assets/img/default.png">
+      <!-- 有错误信息时展示 -->
+      <!-- <div class="alert alert-danger">
+        <strong>错误！</strong> 用户名或密码错误！
+      </div> -->
+      <div class="form-group">
+        <label for="email" class="sr-only">邮箱</label>
+        <input id="email" name="admin_email" type="email" class="form-control" placeholder="邮箱" autofocus>
+      </div>
+      <div class="form-group">
+        <label for="password" class="sr-only">密码</label>
+        <input id="password" type="password" name="admin_pwd" class="form-control" placeholder="密码">
+      </div>
+      <button class="btn btn-primary btn-block" type="submit">登 录</button>
+    </form>
+  </div>
+  <script src="/public/assets/vendors/jquery/jquery.js"></script>
+  <script src="/public/assets/vendors/jquery-validation/jquery.validate.js"></script>
+  <script src="/public/assets/vendors/jquery-validation/localization/messages_zh.js"></script>
+
+  <!-- 引入nprogress包 -->
+  <script src="/public/assets/vendors/nprogress/nprogress.js"></script>
+  <script>
+     $(document)
+      // 当请求开始的时候，调用 NProgress.start() 开始加载进度条
+      .ajaxStart(function () {
+        NProgress.start()
+      })
+      // 当请求停止的时候，调用 NProgress.end() 停止进度条
+      .ajaxStop(function () {
+        NProgress.done()
+      })
+
+    $('#login_form').validate({
+      rules: {
+        admin_email: {
+          required: true,
+          email: true,
+          // 如果要用validate发送ajax异步验证，需要配置remote，而不是简单的传一个路径
+          remote: {
+            url:'/api/users/login/email',
+            type:'post',
+            dataType:'json',
+            data: {
+              admin_email:function() {
+                return $('#email').val();
+              },
+            }
+          },
+        },
+        admin_pwd: {
+          required: true,
+          minlength: 5,
+          
+        }
+      },
+      messages: {
+        admin_email: {
+          required: "邮箱必填",
+          remote: "邮箱不存在，请重新输入"
+        },
+        admin_pwd: {
+          required: "请输入密码",
+          minlength: "密码长度不能小于 5 个字母"
+        }
+      },
+      submitHandler:function(form) {
+        var formData = $('#login_form').serialize();
+        console.log(formData);
+        $.ajax({
+          url:'/api/users/logintrue',
+          method:'POST',
+          data:formData,
+          dataType:'json',
+          success:function(data) {
+            console.log(data);
+            if(data.success) {
+              window.location.href = '/admin'
+            } else{
+              alert(data.messages);
+            }
+          }
+        })
+
+      }
+    })
+  </script>
+</body>
+
+</html>

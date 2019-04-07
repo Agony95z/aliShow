@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard &laquo; Admin</title>
+  <link rel="stylesheet" href="/public/assets/vendors/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="/public/assets/vendors/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="/public/assets/vendors/nprogress/nprogress.css">
+  <link rel="stylesheet" href="/public/assets/css/admin.css">
+  <script src="/public/assets/vendors/nprogress/nprogress.js"></script>
+  
+  {{block 'head'}} 
+    <style>
+      form label.error {
+        color: deeppink!important;
+      }
+    </style>
+  {{/block}}
+</head>
+<body>
+  <script>NProgress.start()</script>
+
+  <div class="main">
+      <!-- 子模板引入语法，也就是所有页面中共有的地方，这个项目中是导航栏和侧边栏，之所以给放到子模板中是为了后期维护方便，假如后期这两个模块有改动，只需要去子模板中去改就行，不必再去每个页面中去改 -->
+    {{include '../includes/navbar.html'}}
+    <!-- body里面放每个页面中不一样的地方，子模板自己定制 -->
+    {{block 'body'}}{{/block}}
+  </div>
+  {{include '../includes/aside.html'}}
+ 
+
+  <script src="/public/assets/vendors/jquery/jquery.js"></script>
+  <script src="/public/assets/vendors/bootstrap/js/bootstrap.js"></script>
+  <script>NProgress.done()</script>
+
+  <script src="/public/assets/vendors/art-template/template-web.js"></script>
+  <!-- 表单验证库 -->
+  <script src="/public/assets/vendors/jquery-validation/jquery.validate.js"></script>
+  <script src="/public/assets/vendors/jquery-validation/localization/messages_zh.js"></script>
+
+  <script>
+     template.defaults.rules[1].test = /{%([@#]?)[ \t]*(\/?)([\w\W]*?)[ \t]*%}/;
+    // 全局错误统一处理
+    $(document).ajaxError(function(event,jqxhr,settings){
+      console.log('event => ', event) // 事件对象
+      console.log('jqxhr => ', jqxhr) // 请求响应对象
+      console.log('settings => ', settings) // 请求相关的配置
+      if (jqxhr.status >= 500) {
+        window.alert('服务端异常，请稍后访问')
+      }
+    })
+
+    // 全局进度条
+  $(document)
+	  .ajaxStart(function () {
+	  	NProgress.start()
+    })
+    .ajaxStop(function () {
+      NProgress.done()
+    })
+  </script>
+
+  
+  {{block 'script'}}{{/block}}
+</body>
+</html>
